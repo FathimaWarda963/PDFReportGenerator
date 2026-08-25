@@ -85,3 +85,7 @@ The duplicate-request check (same day → same report) protects against a user d
 ## PDF sample (page 1)
 
 ![Report sample](ReportScreenshot.png)
+
+
+## Big-table experiment
+Seeding 5,000 orders instead of 200 and generating a report took approximately 1.94 seconds, compared to roughly half that with 200 rows (based on Stage 4 testing) — response time scales with the size of the HTML table the headless browser has to render (126 pages at 5,000 rows vs. 6 pages at 200 rows). This makes it clear that doing this work synchronously inside a request does not scale indefinitely: with much larger datasets (tens of thousands of rows) or many concurrent users generating reports at once, the request would take long enough to risk timeouts and would block server resources that could be serving other requests. This is exactly the case for moving generation into a background job, as A7 does.
