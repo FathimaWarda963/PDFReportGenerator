@@ -135,5 +135,8 @@ def get_report_file(report_id: str):
 
     if row is None:
         raise HTTPException(status_code=404, detail="Report not found")
+    # Build a friendly filename from the report's creation date
+    date_part = row["created_at"][:10]  # "2026-08-25" from the ISO timestamp
+    friendly_name = f"sales-report-{date_part}.pdf"
 
-    return FileResponse(row["path"], media_type="application/pdf", filename=f"{report_id}.pdf")
+    return FileResponse(row["path"], media_type="application/pdf", filename=friendly_name)
