@@ -71,8 +71,10 @@ HTTP/1.1 201 Created
 {"id":"cc78c670-a2c3-4001-b9be-d7d73fe93a17","file":"/reports/cc78c670-a2c3-4001-b9be-d7d73fe93a17/file"}
 
 $ curl -o my-report.pdf http://localhost:8000/reports/cc78c670-a2c3-4001-b9be-d7d73fe93a17/file
-100  66118 100  66118   0      0 264.7k      0 --:--:-- --:--:-- --:--:--
-```
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+100  66118 100  66118   0      0 264.7k      0                              0
+
 
 ## Stage 4 note
 Right now report generation happens synchronously inside the POST /reports request, which takes a few seconds. For a single user clicking one button, this is acceptable. I would move this work into a background job (like the Inngest pattern from A7) once report generation grows heavier — e.g., much larger datasets, more complex rendering, or many concurrent users — because a multi-second request blocks the client and doesn't scale well under load.
