@@ -4,3 +4,4 @@ report.db
 __pycache__/
 *.pyc
 .DS_Store
+my-report.pdf
