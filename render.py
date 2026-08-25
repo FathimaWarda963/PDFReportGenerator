@@ -11,7 +11,10 @@ def build_html(data):
         f"<tr><td>{p['product']}</td><td>${p['revenue']:.2f}</td></tr>"
         for p in data["top_products"]
     )
-
+    orders_per_day_rows = "".join(
+        f"<tr><td>{d['day']}</td><td>{d['count']}</td></tr>"
+        for d in data["orders_per_day"]
+    )
     # Pull every order for the long table
     conn = get_connection()
     all_orders = conn.execute(
@@ -90,6 +93,12 @@ def build_html(data):
             <tbody>{top_products_rows}</tbody>
         </table>
 
+        <h2>Orders per Day (last {data.get('days_window', 7)} days)</h2>
+        <table>
+            <thead><tr><th>Date</th><th>Order Count</th></tr></thead>
+            <tbody>{orders_per_day_rows}</tbody>
+        </table>
+        
         <h2>All Orders ({len(all_orders)})</h2>
         <table>
             <thead><tr><th>Customer</th><th>Product</th><th>Amount</th><th>Date</th></tr></thead>

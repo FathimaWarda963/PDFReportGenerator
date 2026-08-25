@@ -10,7 +10,7 @@ def get_connection():
     return conn
 
 
-def get_report_data():
+def get_report_data(days=7):
     conn = get_connection()
 
     # Total number of orders
@@ -36,15 +36,15 @@ def get_report_data():
         for row in top_products_rows
     ]
 
-    # Orders per day for the last 7 days
-    seven_days_ago = (datetime.now() - timedelta(days=6)).strftime("%Y-%m-%d")
+    # Orders per day for the last N days (parameterized)
+    since_date = (datetime.now() - timedelta(days=days - 1)).strftime("%Y-%m-%d")
     daily_rows = conn.execute("""
         SELECT created_at AS day, COUNT(*) AS count
         FROM orders
         WHERE created_at >= ?
         GROUP BY created_at
         ORDER BY created_at ASC
-    """, (seven_days_ago,)).fetchall()
+    """, (since_date,)).fetchall()
     orders_per_day = [
         {"day": row["day"], "count": row["count"]}
         for row in daily_rows
@@ -57,6 +57,7 @@ def get_report_data():
         "total_revenue": round(total_revenue, 2),
         "top_products": top_products,
         "orders_per_day": orders_per_day,
+        "days_window": days,
     }
 
 

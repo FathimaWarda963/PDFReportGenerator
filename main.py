@@ -6,7 +6,12 @@ from fastapi.responses import FileResponse, JSONResponse
 
 from report_data import get_report_data, get_connection as get_orders_connection
 from render import build_html, render_pdf
+from pydantic import BaseModel
+from typing import Optional
 
+
+class ReportRequest(BaseModel):
+    days: Optional[int] = 7
 app = FastAPI()
 
 DB_PATH = "report.db"
@@ -40,7 +45,7 @@ def health():
 
 
 @app.post("/reports", status_code=201)
-def create_report(force: bool = False):
+def create_report(force: bool = False, body: ReportRequest = ReportRequest()):
     today = datetime.now().strftime("%Y-%m-%d")
 
     if not force:
@@ -63,7 +68,7 @@ def create_report(force: bool = False):
     report_id = str(uuid.uuid4())
     output_path = f"reports/{report_id}.pdf"
 
-    data = get_report_data()
+    data = get_report_data(days=body.days)
     html = build_html(data)
     render_pdf(html, output_path)
 
@@ -81,7 +86,6 @@ def create_report(force: bool = False):
         "id": report_id,
         "file": f"/reports/{report_id}/file"
     }
-
 
 @app.get("/reports/{report_id}")
 def get_report(report_id: str):
