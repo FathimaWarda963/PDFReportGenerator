@@ -106,6 +106,25 @@ def get_report(report_id: str):
     }
 
 
+@app.get("/reports")
+def list_reports():
+    conn = get_connection()
+    rows = conn.execute(
+        "SELECT * FROM reports ORDER BY created_at DESC"
+    ).fetchall()
+    conn.close()
+
+    return [
+        {
+            "id": row["id"],
+            "path": row["path"],
+            "created_at": row["created_at"],
+            "file": f"/reports/{row['id']}/file"
+        }
+        for row in rows
+    ]
+
+
 @app.get("/reports/{report_id}/file")
 def get_report_file(report_id: str):
     conn = get_connection()
